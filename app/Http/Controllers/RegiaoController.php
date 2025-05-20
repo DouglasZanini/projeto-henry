@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Regiao;
-
 use Illuminate\Http\Request;
 
 class RegiaoController extends Controller
@@ -13,10 +12,9 @@ class RegiaoController extends Controller
      */
     public function index()
     {
-
         $regioes = Regiao::all();
 
-        return view('regiao.index', compact('regioes'));
+        return response()->json($regioes);
     }
 
     /**
@@ -24,7 +22,7 @@ class RegiaoController extends Controller
      */
     public function create()
     {
-        return view('regiao.create');
+        return response()->json(['message' => 'Form for creating a new region']);
     }
 
     /**
@@ -33,15 +31,24 @@ class RegiaoController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'nome' => 'required|string|max:255'
+            'nome' => 'required|string|max:50|unique:regiao,nome'
         ]);
 
-        // Store the new region in the database
-        Regiao::create($request->all());
+        // Encontrar o próximo ID disponível
+        $maxId = Regiao::max('id') ?? 0;
+        $nextId = $maxId + 1;
 
-        return redirect()->route('regiao.index')->with('success', 'Região criada com sucesso!');
+        // Criar o registro com ID explícito
+        $regiao = new Regiao();
+        $regiao->id = $nextId;
+        $regiao->nome = $request->nome;
+        $regiao->save();
+
+        return response()->json([
+            'message' => 'Região criada com sucesso!', 
+            'data' => $regiao
+        ]);
     }
-
     /**
      * Display the specified resource.
      */
@@ -49,23 +56,23 @@ class RegiaoController extends Controller
     {
         $regiao = Regiao::findOrFail($id);
 
-        return view('regiao.show', compact('regiao'));
+        return response()->json($regiao);
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit($id)
     {
         $regiao = Regiao::findOrFail($id);
 
-        return view('regiao.edit', compact('regiao'));
+        return response()->json(['message' => 'Form for editing the region', 'data' => $regiao]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, $id)
     {
         $request->validate([
             'nome' => 'required|string|max:255'
@@ -74,17 +81,17 @@ class RegiaoController extends Controller
         $regiao = Regiao::findOrFail($id);
         $regiao->update($request->all());
 
-        return redirect()->route('regiao.index')->with('success', 'Região atualizada com sucesso!');
+        return response()->json(['message' => 'Região atualizada com sucesso!', 'data' => $regiao]);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy($id)
     {
         $regiao = Regiao::findOrFail($id);
         $regiao->delete();
 
-        return redirect()->route('regiao.index')->with('success', 'Região excluída com sucesso!');
+        return response()->json(['message' => 'Região excluída com sucesso!']);
     }
 }
