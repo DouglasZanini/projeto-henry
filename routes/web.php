@@ -10,7 +10,9 @@ use App\Http\Controllers\VendasController;
 
 //teste provisório
 Route::get('/dashboard/vendas', [VendasController::class, 'index'])->name('vendas.index');
+Route::get('/dashboard/vendas/nova-venda', [VendasController::class, 'create'])->name('vendas.create');
 Route::post('/dashboard/vendas', [VendasController::class, 'store'])->name('vendas.store');
+Route::get('/vendas/{id}', [VendasController::class, 'show'])->name('vendas.show');
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
