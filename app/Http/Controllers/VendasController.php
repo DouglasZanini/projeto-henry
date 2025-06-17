@@ -17,7 +17,11 @@ class VendasController extends Controller
     public function index()
     {
 
-        return view('modules.vendas.index');
+        $clientes = Cliente::orderBy('nome')->get();
+        $vendedores = Emp::whereNotNull('comissao')->orderBy('ultimo_nome')->get(); // Empregados com comissão são vendedores
+        $produtos = Produto::orderBy('nome')->get();
+
+        return view('modules.vendas.index', compact('clientes', 'vendedores', 'produtos'));
     }
 
     public function store(Request $request)

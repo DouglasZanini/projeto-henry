@@ -38,7 +38,7 @@ document.addEventListener('DOMContentLoaded', function() {
             data: {
                 nome: nome,
                 localizacao: localizacao,
-                _token: '{{ csrf_token() }}'
+                _token: document.querySelector('meta[name="csrf-token"]').getAttribute('content')
             }
         })
         .then(function(response) {
@@ -120,7 +120,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         axios.delete(`/departamentos/${id}`, {
             data: {
-                _token: '{{ csrf_token() }}'
+                _token: document.querySelector('meta[name="csrf-token"]').getAttribute('content')
             }
         })
         .then(function(response) {

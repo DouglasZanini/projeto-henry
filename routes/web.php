@@ -7,16 +7,13 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\VendasController;
 
-Route::get('/', function () {
-    return view('welcome');
-});
 
 //teste provisório
 Route::get('/dashboard/vendas', [VendasController::class, 'index'])->name('vendas.index');
 Route::post('/dashboard/vendas', [VendasController::class, 'store'])->name('vendas.store');
 
 Route::middleware(['auth'])->group(function () {
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 });
 
 //Route::get('/dashboard', function () {
