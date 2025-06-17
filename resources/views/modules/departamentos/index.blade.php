@@ -7,7 +7,10 @@
 
     <div class="py-10 px-6 max-w-7xl mx-auto">
         <!-- Botão Criar -->
-        <div class="flex justify-end mb-6">
+        <div class="flex justify-end mb-6 gap-4">
+             <a href="{{ route('dashboard') }}" class="inline-flex items-center px-5 py-2.5 bg-gray-700 border border-transparent rounded-xl font-semibold text-sm text-purple-700 uppercase tracking-wide hover:bg-purple-300 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:ring-offset-2 transition ease-in-out duration-150 shadow-md">
+                Dashboard
+            </a>  
             <button id="btn-criar" type="button" class="inline-flex items-center px-5 py-2.5 bg-purple-700 border border-transparent rounded-xl font-semibold text-sm text-white uppercase tracking-wide hover:bg-purple-800 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:ring-offset-2 transition ease-in-out duration-150 shadow-md"
                     onclick="document.getElementById('modal').classList.remove('hidden')">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -15,6 +18,7 @@
                 </svg>
                 Novo Departamento
             </button>
+               
         </div>
 
 

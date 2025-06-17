@@ -128,6 +128,10 @@
                     <div id="total-geral" class="text-xl font-bold text-green-700">R$ 0,00</div>
                 </div>
             </div>
+                <a href="{{ route('vendas.index') }}" class="inline-flex items-center px-5 py-2.5 bg-gray-700 border border-transparent rounded-xl font-semibold text-sm text-purple-700 uppercase tracking-wide hover:bg-purple-300 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:ring-offset-2 transition ease-in-out duration-150 shadow-md">
+                    ← Retornar
+                </a>  
+                    
         </form>
     </div>
 

@@ -48,10 +48,17 @@
 
             <!-- Botão de login -->
             <div>
-                <x-primary-button class="w-full bg-purple-700 hover:bg-purple-800 text-white px-5 py-2 rounded-md transition">
+                <x-primary-button class=" bg-purple-700 hover:bg-purple-800 text-white px-5 py-2 rounded-md transition">
                     Entrar
                 </x-primary-button>
+                <a>
+                    <p class="mt-4 text-sm text-gray-600">
+                        Não tem uma conta? 
+                        <a href="{{ route('register') }}" class="text-purple-600 hover:underline">Cadastre-se</a>
+                    </p>
+                </a>
             </div>
+            
         </form>
     </div>
 </x-guest-layout>
