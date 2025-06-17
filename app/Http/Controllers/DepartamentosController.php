@@ -55,7 +55,6 @@ class DepartamentosController extends Controller
         $dept->id = $nextId;
         $dept->nome = $request->nome;
         $dept->regiao_id = $request->regiao_id;
-        $dept->total_salarios = $request->total_salarios;
         $dept->save();
 
         return response()->json([
