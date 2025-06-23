@@ -39,6 +39,7 @@ document.addEventListener('DOMContentLoaded', function () {
       const id = btn.getAttribute('data-id');
       currentEmpregadoId = id;
       modalTitle.textContent = 'Editar Empregado';
+      modal.classList.remove('hidden')
       try {
         const res = await fetch(`/empregados/${id}/edit`);
         if (!res.ok) throw new Error('Erro ao carregar empregado');
@@ -122,13 +123,22 @@ document.addEventListener('DOMContentLoaded', function () {
           'Accept': 'application/json',
         },
       });
-
-      if (!res.ok) throw new Error('Erro ao excluir empregado');
-
-      // Após exclusão, recarregar a página para atualizar lista
+  
+      const responseData = await res.json();
+  
+      if (!res.ok) {
+        // Mostrar a mensagem de erro específica do servidor
+        alert(responseData.message || 'Erro ao excluir empregado');
+        deleteModal.classList.add('hidden');
+        return;
+      }
+  
+      // Sucesso - mostrar mensagem e recarregar
+      alert(responseData.message || 'Empregado excluído com sucesso!');
       location.reload();
     } catch (error) {
-      alert(error.message);
+      alert('Erro ao excluir empregado: ' + error.message);
+      deleteModal.classList.add('hidden');
     }
   });
 });

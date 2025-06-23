@@ -63,7 +63,7 @@ class Emp extends Model
      * 
      * @var array
      */
-    const COMISSAO_VALORES = [10.00, 12.50, 15.00, 17.50, 20.00];
+    const COMISSAO_VALORES = [10.00, 12.50, 15.00, 17.50, 20.00, null];
     
     /**
      * Obtém o departamento do empregado.

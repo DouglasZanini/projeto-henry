@@ -11,7 +11,7 @@
              <a href="{{ route('dashboard') }}" class="inline-flex items-center px-5 py-2.5 bg-gray-200 border border-transparent rounded-xl font-semibold text-sm text-purple-700 uppercase tracking-wide hover:bg-purple-300 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:ring-offset-2 transition ease-in-out duration-150 shadow-md">
                ← Dashboard
             </a> 
-            <button type="button" onclick="document.getElementById('modal-criar').classList.remove('hidden')"
+            <button type="button" id="btn-criar"
                 class="inline-flex items-center px-5 py-2.5 bg-purple-700 border border-transparent rounded-xl font-semibold text-sm text-white uppercase tracking-wide hover:bg-purple-800 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:ring-offset-2 transition ease-in-out duration-150 shadow-md">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
@@ -62,13 +62,15 @@
         </div>
     </div>
 
-    <!-- Modal Criar Empregado -->
-    <div id="modal-criar" class="fixed inset-0 bg-black bg-opacity-30 hidden flex items-center justify-center z-50">
+    <!-- Modal de Edição/Criação de Empregado -->
+    <div id="empregado-modal" class="fixed inset-0 bg-black bg-opacity-30 hidden flex items-center justify-center z-50">
         <div class="bg-white rounded-xl shadow-xl w-full max-w-xl p-6 relative animate-fade-in">
-            <button onclick="document.getElementById('modal-criar').classList.add('hidden')" class="absolute top-3 right-4 text-gray-500 hover:text-gray-700 text-xl">&times;</button>
-            <h3 class="text-lg font-semibold text-purple-700 mb-4">Novo Empregado</h3>
-            <form method="POST" action="{{ route('empregados.store') }}">
+            <button id="modal-close" class="absolute top-3 right-4 text-gray-500 hover:text-gray-700 text-xl">&times;</button>
+            <h3 id="modal-title" class="text-lg font-semibold text-purple-700 mb-4">Novo Empregado</h3>
+            
+            <form id="empregado-form" method="POST" action="{{ route('empregados.store') }}">
                 @csrf
+                <input type="hidden" name="_method" value="POST">
 
                 <div class="grid grid-cols-2 gap-4">
                     <div>
@@ -102,6 +104,7 @@
                     <div>
                         <label for="dept_id" class="block text-sm font-medium text-gray-700">Departamento</label>
                         <select name="dept_id" id="dept_id" class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm">
+                            <option value="">Selecione um departamento</option>
                             @foreach ($departamentos as $departamento)
                                 <option value="{{ $departamento->id }}">{{ $departamento->nome }}</option>
                             @endforeach
@@ -111,13 +114,85 @@
                         <label for="gerente_id" class="block text-sm font-medium text-gray-700">Gerente (ID)</label>
                         <input type="number" name="gerente_id" id="gerente_id" class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm">
                     </div>
+                    <div class="col-span-2">
+                        <label for="obs" class="block text-sm font-medium text-gray-700">Observações</label>
+                        <textarea name="obs" id="obs" rows="3" class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm"></textarea>
+                    </div>
                 </div>
 
                 <div class="flex justify-end gap-3 mt-6">
-                    <button type="button" onclick="document.getElementById('modal-criar').classList.add('hidden')" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-xl shadow hover:bg-gray-300">Cancelar</button>
+                    <button type="button" class="cancelar-modal px-4 py-2 bg-gray-200 text-gray-700 rounded-xl shadow hover:bg-gray-300">Cancelar</button>
                     <button type="submit" class="px-4 py-2 bg-purple-700 text-white rounded-xl shadow hover:bg-purple-800">Salvar</button>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- Modal de Visualização de Empregado -->
+    <div id="empregado-view-modal" class="fixed inset-0 bg-black bg-opacity-30 hidden flex items-center justify-center z-50">
+        <div class="bg-white rounded-xl shadow-xl w-full max-w-xl p-6 relative animate-fade-in">
+            <button class="cancelar-modal absolute top-3 right-4 text-gray-500 hover:text-gray-700 text-xl">&times;</button>
+            <h3 class="text-lg font-semibold text-purple-700 mb-4">Detalhes do Empregado</h3>
+            
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Primeiro Nome</label>
+                    <div id="view-primeiro_nome" class="mt-1 p-2 bg-gray-50 rounded-xl border">-</div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Sobrenome</label>
+                    <div id="view-ultimo_nome" class="mt-1 p-2 bg-gray-50 rounded-xl border">-</div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Usuário</label>
+                    <div id="view-userid" class="mt-1 p-2 bg-gray-50 rounded-xl border">-</div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Admissão</label>
+                    <div id="view-admissao" class="mt-1 p-2 bg-gray-50 rounded-xl border">-</div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Função</label>
+                    <div id="view-funcao" class="mt-1 p-2 bg-gray-50 rounded-xl border">-</div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Salário</label>
+                    <div id="view-salario" class="mt-1 p-2 bg-gray-50 rounded-xl border">-</div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Comissão</label>
+                    <div id="view-comissao" class="mt-1 p-2 bg-gray-50 rounded-xl border">-</div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Departamento</label>
+                    <div id="view-dept_id" class="mt-1 p-2 bg-gray-50 rounded-xl border">-</div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Gerente</label>
+                    <div id="view-gerente_id" class="mt-1 p-2 bg-gray-50 rounded-xl border">-</div>
+                </div>
+                <div class="col-span-2">
+                    <label class="block text-sm font-medium text-gray-700">Observações</label>
+                    <div id="view-obs" class="mt-1 p-2 bg-gray-50 rounded-xl border min-h-[60px]">-</div>
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-3 mt-6">
+                <button type="button" class="cancelar-modal px-4 py-2 bg-gray-200 text-gray-700 rounded-xl shadow hover:bg-gray-300">Fechar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Confirmação de Exclusão -->
+    <div id="confirm-delete-modal" class="fixed inset-0 bg-black bg-opacity-30 hidden flex items-center justify-center z-50">
+        <div class="bg-white rounded-xl shadow-xl max-w-md p-6 relative animate-fade-in">
+            <h3 class="text-lg font-semibold text-red-700 mb-4">Confirmar Exclusão</h3>
+            <p class="text-gray-600 mb-6">Tem certeza de que deseja excluir este empregado? Esta ação não pode ser desfeita.</p>
+            
+            <div class="flex justify-end gap-3">
+                <button type="button" id="cancelar-exclusao" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-xl shadow hover:bg-gray-300">Cancelar</button>
+                <button type="button" id="confirmar-exclusao" class="px-4 py-2 bg-red-600 text-white rounded-xl shadow hover:bg-red-700">Excluir</button>
+            </div>
         </div>
     </div>
 

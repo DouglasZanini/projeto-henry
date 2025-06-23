@@ -9,7 +9,8 @@ export default defineConfig({
                 'resources/js/app.js',
                 'resources/js/departamento.js',
                 'resources/js/vendas.js',
-                'resources/js/vendas-list.js'
+                'resources/js/vendas-list.js',
+                'resources/js/empregado.js'
 
             ],
             refresh: true,
