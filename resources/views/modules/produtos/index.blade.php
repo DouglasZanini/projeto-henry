@@ -38,8 +38,12 @@
                     <td class="px-4 py-2">{{ $produto->descricao_breve }}</td>
                     <td class="px-4 py-2">R$ {{ number_format($produto->preco_sugerido, 2, ',', '.') }}</td>
                     <td class="px-4 py-2">{{ $produto->unidades }}</td>
-                    <td class="px-4 py-2">
-                        <!-- Aqui pode incluir botões de editar/excluir -->
+                        <td class="px-6 py-4 flex items-center justify-center gap-2">
+                         <button class="text-blue-600 hover:underline edit-cliente" data-id="{{ $produto->id }}">Editar</button>
+                            <form method="POST" action="{{ route('produtos.destroy', $produto->id) }}" class="inline">
+                                 @csrf @method('DELETE')
+                                <button type="submit" class="text-red-600 hover:underline ml-2">Excluir</button>
+                            </form>
                     </td>
                 </tr>
             @endforeach
