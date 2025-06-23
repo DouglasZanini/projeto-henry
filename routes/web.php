@@ -23,14 +23,18 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('empregados', EmpController::class);
     Route::resource('clientes', ClienteController::class);
 
+    Route::prefix('produtos')->name('produtos.')->group(function () {
+        Route::get('/', [ProdutoController::class, 'index'])->name('index');
+        Route::post('/', [ProdutoController::class, 'store'])->name('store');
+        Route::get('/{id}', [ProdutoController::class, 'show'])->name('show');
+        Route::get('/{id}/edit', [ProdutoController::class, 'edit'])->name('edit'); // ESTA ROTA ESTAVA FALTANDO
+        Route::put('/{id}', [ProdutoController::class, 'update'])->name('update');
+        Route::delete('/{id}', [ProdutoController::class, 'destroy'])->name('destroy');
+    });
+
 });
-Route::prefix('produtos')->name('produtos.')->group(function () {
-    Route::get('/', [ProdutoController::class, 'index'])->name('index');
-    Route::post('/', [ProdutoController::class, 'store'])->name('store');
-    Route::get('/{id}', [ProdutoController::class, 'show'])->name('show');
-    Route::put('/{id}', [ProdutoController::class, 'update'])->name('update');
-    Route::delete('/{id}', [ProdutoController::class, 'destroy'])->name('destroy');
-});
+
+
 
 //Route::get('/dashboard', function () {
 //    return view('dashboard');
