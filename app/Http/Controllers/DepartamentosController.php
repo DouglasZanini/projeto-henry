@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Departamento;
 use Illuminate\Http\Request;
+use App\Models\Regiao;
+use App\Models\Emp;
 
 class DepartamentosController extends Controller
 {
@@ -12,9 +14,11 @@ class DepartamentosController extends Controller
      */
     public function index()
     {
-        $departamentos = Departamento::all();
-        return view('modules.departamentos.index', compact('departamentos'));
-    }
+        $departamentos = Departamento::with('regiao')->get();
+        $regioes = Regiao::all();
+
+        return view('modules.departamentos.index', compact('departamentos', 'regioes'));
+    }   
 
     /**
      * Show the form for creating a new resource.
@@ -68,8 +72,8 @@ class DepartamentosController extends Controller
      */
     public function show($id)
     {
-        $dept = Departamento::with('regiao')->findOrFail($id);
-        return response()->json($dept);
+    $departamento = Departamento::with('regiao')->findOrFail($id);
+    return response()->json($departamento);
     }
 
     /**
@@ -121,9 +125,14 @@ class DepartamentosController extends Controller
      */
     public function destroy($id)
     {
-        $dept = Departamento::findOrFail($id);
+        $dept = Departamento::withCount('emp')->findOrFail($id);
+
+        if ($dept->emp_count > 0) {
+            return redirect()->back()->with('error', 'Não é possível excluir o departamento porque ele está vinculado a um ou mais empregados.');
+        }
+
         $dept->delete();
 
-        return response()->json(['message' => 'Departamento excluído com sucesso!']);
+        return redirect()->route('departamentos.index')->with('success', 'Departamento excluído com sucesso.');
     }
 }

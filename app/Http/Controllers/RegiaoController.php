@@ -16,7 +16,7 @@ class RegiaoController extends Controller
 
         $regioes = Regiao::all();
 
-        return view('regiao.index', compact('regioes'));
+        return view('modules.regiao.index', compact('regioes'));
     }
 
     /**
@@ -39,7 +39,7 @@ class RegiaoController extends Controller
         // Store the new region in the database
         Regiao::create($request->all());
 
-        return redirect()->route('regiao.index')->with('success', 'Região criada com sucesso!');
+        return redirect()->route('modules.regiao.index')->with('success', 'Região criada com sucesso!');
     }
 
     /**

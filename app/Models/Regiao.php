@@ -8,4 +8,5 @@ class Regiao extends Model
 {
     protected $table = 'regiao';
     protected $fillable = ['nome'];
+     public $timestamps = false;
 }

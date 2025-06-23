@@ -6,16 +6,30 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\VendasController;
+use App\Http\Controllers\RegiaoController;
+use App\Http\Controllers\EmpController;
+use App\Http\Controllers\ProdutoController;
+use App\Http\Controllers\ClienteController;
 
-
-//teste provisório
-Route::get('/dashboard/vendas', [VendasController::class, 'index'])->name('vendas.index');
-Route::get('/dashboard/vendas/nova-venda', [VendasController::class, 'create'])->name('vendas.create');
-Route::post('/dashboard/vendas', [VendasController::class, 'store'])->name('vendas.store');
-Route::get('/vendas/{id}', [VendasController::class, 'show'])->name('vendas.show');
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard/vendas', [VendasController::class, 'index'])->name('vendas.index');
+    Route::get('/dashboard/vendas/nova-venda', [VendasController::class, 'create'])->name('vendas.create');
+    Route::post('/dashboard/vendas', [VendasController::class, 'store'])->name('vendas.store');
+    Route::get('/vendas/{id}', [VendasController::class, 'show'])->name('vendas.show');
+    Route::get('regiao', [RegiaoController::class, 'index'])->name('regiao.index');
+    Route::post('regiao', [RegiaoController::class, 'store'])->name('regiao.store');
+    Route::resource('empregados', EmpController::class);
+    Route::resource('clientes', ClienteController::class);
+
+});
+Route::prefix('produtos')->name('produtos.')->group(function () {
+    Route::get('/', [ProdutoController::class, 'index'])->name('index');
+    Route::post('/', [ProdutoController::class, 'store'])->name('store');
+    Route::get('/{id}', [ProdutoController::class, 'show'])->name('show');
+    Route::put('/{id}', [ProdutoController::class, 'update'])->name('update');
+    Route::delete('/{id}', [ProdutoController::class, 'destroy'])->name('destroy');
 });
 
 //Route::get('/dashboard', function () {
