@@ -14,8 +14,8 @@ Route::get('/regiao/{id}', [RegiaoController::class, 'show']);
 Route::put('/regiao/{id}', [RegiaoController::class, 'update']);
 Route::delete('/regiao/{id}', [RegiaoController::class, 'destroy']);
 
-Route::get('/departamento', [DepartamentosController::class, 'index']);
-Route::post('/departamento', [DepartamentosController::class, 'store']);
-Route::get('/departamento/{id}', [DepartamentosController::class, 'show']);
-Route::put('/departamento/{id}', [DepartamentosController::class, 'update']);
-Route::delete('/departamento/{id}', [DepartamentosController::class, 'destroy']);
+Route::get('/departamento', [DepartamentosController::class, 'index'])->name('departamento.index');
+Route::post('/departamento', [DepartamentosController::class, 'store'])->name('departamento.store');
+Route::get('/departamento/{id}', [DepartamentosController::class, 'show'])->name('departamento.show');
+Route::put('/departamento/{id}', [DepartamentosController::class, 'update'])->name('departamento.update');
+Route::delete('/departamento/{id}', [DepartamentosController::class, 'destroy'])->name('departamento.destroy');

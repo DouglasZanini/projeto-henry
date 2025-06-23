@@ -125,14 +125,48 @@ class DepartamentosController extends Controller
      */
     public function destroy($id)
     {
-        $dept = Departamento::withCount('emp')->findOrFail($id);
-
-        if ($dept->emp_count > 0) {
-            return redirect()->back()->with('error', 'Não é possível excluir o departamento porque ele está vinculado a um ou mais empregados.');
+        try {
+            $dept = Departamento::findOrFail($id);
+            
+            // Verificar se há empregados vinculados
+            $empregadosCount = Emp::where('dept_id', $id)->count();
+            
+            if ($empregadosCount > 0) {
+                // Para requisições AJAX
+                if (request()->expectsJson()) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Não é possível excluir este departamento pois ele possui empregados vinculados.'
+                    ], 400);
+                }
+                
+                return redirect()->route('departamentos.index')
+                    ->with('error', 'Não é possível excluir este departamento pois ele possui empregados vinculados.');
+            }
+    
+            $dept->delete();
+            
+            // Para requisições AJAX
+            if (request()->expectsJson()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Departamento excluído com sucesso!'
+                ]);
+            }
+    
+            return redirect()->route('departamentos.index')->with('success', 'Departamento excluído com sucesso!');
+            
+        } catch (\Exception $e) {
+            // Para requisições AJAX
+            if (request()->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Erro ao excluir departamento: ' . $e->getMessage()
+                ], 500);
+            }
+    
+            return redirect()->route('departamentos.index')
+                ->with('error', 'Erro ao excluir departamento: ' . $e->getMessage());
         }
-
-        $dept->delete();
-
-        return redirect()->route('departamentos.index')->with('success', 'Departamento excluído com sucesso.');
     }
 }
