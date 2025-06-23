@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Route;
 // ...existing code...
 
 // Regiao routes
-Route::get('/regiao', [RegiaoController::class, 'index']);
+Route::get('/regiao', [RegiaoController::class, 'index'])->name('regiao.index');
 Route::post('/regiao', [RegiaoController::class, 'store']);
 Route::get('/regiao/{id}', [RegiaoController::class, 'show']);
 Route::put('/regiao/{id}', [RegiaoController::class, 'update']);

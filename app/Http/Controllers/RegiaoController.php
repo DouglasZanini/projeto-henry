@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+use Illuminate\Support\Facades\DB;
 
 use App\Models\Regiao;
 
@@ -35,11 +36,28 @@ class RegiaoController extends Controller
         $request->validate([
             'nome' => 'required|string|max:255'
         ]);
-
-        // Store the new region in the database
-        Regiao::create($request->all());
-
-        return redirect()->route('modules.regiao.index')->with('success', 'Região criada com sucesso!');
+    
+        DB::beginTransaction();
+    
+        try {
+            // Obter o próximo ID disponível
+            $nextId = DB::selectOne('SELECT COALESCE(MAX(id) + 1, 1) as next_id FROM regiao')->next_id;
+            
+            // Criar nova região
+            $regiao = new Regiao();
+            $regiao->id = $nextId; // Definir o ID manualmente
+            $regiao->nome = $request->nome;
+            $regiao->save();
+    
+            DB::commit();
+    
+            return redirect()->route('regiao.index')->with('success', 'Região criada com sucesso!');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            \Log::error('Erro ao criar região: ' . $e->getMessage());
+    
+            return redirect()->route('regiao.index')->with('error', 'Erro ao criar região: ' . $e->getMessage());
+        }
     }
 
     /**
