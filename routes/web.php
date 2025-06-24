@@ -20,6 +20,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/vendas/{id}', [VendasController::class, 'show'])->name('vendas.show');
     Route::get('regiao', [RegiaoController::class, 'index'])->name('regiao.index');
     Route::post('regiao', [RegiaoController::class, 'store'])->name('regiao.store');
+    
     Route::resource('empregados', EmpController::class);
     Route::resource('clientes', ClienteController::class);
 

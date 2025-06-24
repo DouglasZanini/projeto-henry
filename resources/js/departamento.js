@@ -91,7 +91,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     showAlert(data.message || 'Departamento salvo com sucesso!', 'success');
 
                     // Recarregar a página para mostrar a atualização
-                    window.location.reload();
+                    
                 })
                 .catch(function (error) {
                     console.error('Erro ao salvar departamento:', error);
@@ -208,7 +208,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     if (data.success) {
                         showAlert(data.message || 'Departamento excluído com sucesso!', 'success');
                         // Recarregar a página para refletir a exclusão
-                        window.location.reload();
+                        
                     } else {
                         showAlert(data.message || 'Erro ao excluir departamento.', 'error');
                     }
