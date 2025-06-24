@@ -85,6 +85,23 @@
             </form>
         </div>
     </div>
+    <!-- Modal de Confirmação de Exclusão -->
+<div id="delete-modal" class="hidden fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
+    <div class="bg-white p-6 rounded-xl w-full max-w-md relative">
+        <button onclick="closeDeleteModal()" class="absolute top-3 right-4 text-gray-600 text-xl">×</button>
+        <h3 class="text-lg font-semibold mb-4 text-red-700">Confirmar Exclusão</h3>
+        <p class="text-sm text-gray-700 mb-6">Tem certeza de que deseja excluir este produto? Esta ação não poderá ser desfeita.</p>
+        <form id="delete-form" method="POST" action="">
+            @csrf
+            @method('DELETE')
+            <div class="flex justify-end gap-3">
+                <button type="button" onclick="closeDeleteModal()" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-xl hover:bg-gray-300">Cancelar</button>
+                <button type="submit" class="bg-red-600 text-white px-4 py-2 rounded-xl hover:bg-red-700">Excluir</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 </div>
 
 @vite(['resources/js/produto.js'])
