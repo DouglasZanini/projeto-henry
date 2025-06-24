@@ -18,9 +18,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard/vendas/nova-venda', [VendasController::class, 'create'])->name('vendas.create');
     Route::post('/dashboard/vendas', [VendasController::class, 'store'])->name('vendas.store');
     Route::get('/vendas/{id}', [VendasController::class, 'show'])->name('vendas.show');
-    Route::get('regiao', [RegiaoController::class, 'index'])->name('regiao.index');
-    Route::post('regiao', [RegiaoController::class, 'store'])->name('regiao.store');
-    
+    Route::resource('regiao', RegiaoController::class);
     Route::resource('empregados', EmpController::class);
     Route::resource('clientes', ClienteController::class);
 
