@@ -1,7 +1,11 @@
 document.addEventListener('DOMContentLoaded', function() {
     const modal = document.getElementById('produto-modal');
+    const viewModal = document.getElementById('produto-view-modal');
+    const deleteModal = document.getElementById('delete-modal');
     const form = document.getElementById('produto-form');
     const modalTitle = document.querySelector('#produto-modal h3');
+    const deleteForm = document.getElementById('delete-form');
+    const alertContainer = document.getElementById('alert-container');
     
     let currentProdutoId = null;
 
@@ -12,7 +16,11 @@ document.addEventListener('DOMContentLoaded', function() {
         form.reset();
         form.action = '/produtos';
         form.method = 'POST';
-        form.querySelector('input[name="_method"]')?.remove();
+        
+        // Remover campo _method se existir
+        const methodField = form.querySelector('input[name="_method"]');
+        if (methodField) methodField.remove();
+        
         modal.classList.remove('hidden');
     }
 
@@ -20,6 +28,19 @@ document.addEventListener('DOMContentLoaded', function() {
     window.closeModal = function() {
         modal.classList.add('hidden');
     }
+    
+    // Função para fechar modal de exclusão
+    window.closeDeleteModal = function() {
+        deleteModal.classList.add('hidden');
+    }
+
+    // Fechar modal de visualização
+    document.querySelectorAll('.cancelar-modal').forEach(button => {
+        button.addEventListener('click', function() {
+            const modal = this.closest('.fixed');
+            if (modal) modal.classList.add('hidden');
+        });
+    });
 
     // Submit do formulário
     form.addEventListener('submit', function(e) {
@@ -45,11 +66,14 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                showAlert(data.message, 'success');
                 closeModal();
-                window.location.reload();
+                showAlert(data.message || 'Produto salvo com sucesso!', 'success');
+                // Recarregar a página para mostrar a atualização
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1500);
             } else {
-                showAlert(data.message, 'error');
+                showAlert(data.message || 'Erro ao salvar produto', 'error');
             }
         })
         .catch(error => {
@@ -91,6 +115,36 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
         });
     });
+    
+    // Botões de visualizar
+    document.querySelectorAll('.view-produto').forEach(button => {
+        button.addEventListener('click', function() {
+            const id = this.getAttribute('data-id');
+            if (!id) return;
+            
+            showLoading(true);
+            
+            fetch(`/produtos/${id}`)
+                .then(response => response.json())
+                .then(data => {
+                    // Preencher os campos do modal de visualização
+                    document.getElementById('view-produto-nome').textContent = data.nome || '-';
+                    document.getElementById('view-produto-descricao').textContent = data.descricao_breve || '-';
+                    document.getElementById('view-produto-preco').textContent = data.preco_formatado || '-';
+                    document.getElementById('view-produto-unidades').textContent = data.unidades || '-';
+                    
+                    // Mostrar o modal
+                    viewModal.classList.remove('hidden');
+                })
+                .catch(error => {
+                    console.error('Erro ao carregar detalhes do produto:', error);
+                    showAlert('Erro ao carregar detalhes do produto', 'error');
+                })
+                .finally(() => {
+                    showLoading(false);
+                });
+        });
+    });
 
     // Botões de excluir
     document.querySelectorAll('.delete-produto').forEach(button => {
@@ -98,41 +152,58 @@ document.addEventListener('DOMContentLoaded', function() {
             e.preventDefault();
             
             const id = this.getAttribute('data-id');
+            currentProdutoId = id;
             
-            if (confirm('Tem certeza que deseja excluir este produto?')) {
-                showLoading(true);
-                
-                fetch(`/produtos/${id}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'Accept': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                    }
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        showAlert(data.message, 'success');
-                        window.location.reload();
-                    } else {
-                        showAlert(data.message, 'error');
-                    }
-                })
-                .catch(error => {
-                    console.error('Erro ao excluir produto:', error);
-                    showAlert('Erro ao excluir produto', 'error');
-                })
-                .finally(() => {
-                    showLoading(false);
-                });
+            // Configurar o formulário de exclusão
+            deleteForm.action = `/produtos/${id}`;
+            
+            // Mostrar modal de confirmação
+            deleteModal.classList.remove('hidden');
+        });
+    });
+    
+    // Confirmar exclusão
+    deleteForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        showLoading(true);
+        
+        fetch(this.action, {
+            method: 'DELETE',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
             }
+        })
+        .then(response => response.json())
+        .then(data => {
+            closeDeleteModal();
+            
+            if (data.success) {
+                showAlert(data.message || 'Produto excluído com sucesso!', 'success');
+                // Recarregar a página para refletir a exclusão
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1500);
+            } else {
+                showAlert(data.message || 'Erro ao excluir produto', 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Erro ao excluir produto:', error);
+            showAlert('Erro ao excluir produto', 'error');
+        })
+        .finally(() => {
+            showLoading(false);
         });
     });
 
-    // Funções utilitárias
-    function showLoading(show) {
+    // ======= FUNÇÕES UTILITÁRIAS (copiadas do departamento.js) =======
+
+    function showLoading(show = true) {
         let loadingElement = document.getElementById('loading');
-        
+
         if (!loadingElement) {
             loadingElement = document.createElement('div');
             loadingElement.id = 'loading';
@@ -147,7 +218,7 @@ document.addEventListener('DOMContentLoaded', function() {
             `;
             document.body.appendChild(loadingElement);
         }
-        
+
         if (show) {
             loadingElement.classList.remove('hidden');
         } else {
@@ -155,5 +226,28 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    
+    function showAlert(message, type) {
+        if (!alertContainer) {
+            console.error('Alert container not found');
+            return;
+        }
+
+        alertContainer.classList.remove('hidden');
+
+        if (type === 'success') {
+            alertContainer.className = 'mb-4 px-5 py-4 bg-green-100 text-green-800 rounded-xl text-sm shadow-md';
+        } else {
+            alertContainer.className = 'mb-4 px-5 py-4 bg-red-100 text-red-800 rounded-xl text-sm shadow-md';
+        }
+
+        alertContainer.innerHTML = message;
+
+        // Esconder o alerta após 5 segundos
+        setTimeout(function () {
+            alertContainer.classList.add('hidden');
+        }, 5000);
+
+        // Scroll para o topo para garantir que o alerta seja visível
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
 });

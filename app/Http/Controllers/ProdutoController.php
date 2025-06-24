@@ -83,18 +83,17 @@ class ProdutoController extends Controller
     public function show($id)
     {
         $produto = Produto::findOrFail($id);
-
-        $data = [
+        
+        return response()->json([
             'id' => $produto->id,
             'nome' => $produto->nome,
             'descricao_breve' => $produto->descricao_breve,
             'textolongo_id' => $produto->textolongo_id,
             'imagem_id' => $produto->imagem_id,
-            'preco_sugerido' => $produto->preco_sugerido ? number_format($produto->preco_sugerido, 2, ',', '.') : null,
+            'preco_sugerido' => $produto->preco_sugerido,
+            'preco_formatado' => $produto->preco_sugerido ? 'R$ ' . number_format($produto->preco_sugerido, 2, ',', '.') : 'Não informado',
             'unidades' => $produto->unidades
-        ];
-
-        return response()->json($data);
+        ]);
     }
 
     public function edit($id)
@@ -169,48 +168,49 @@ class ProdutoController extends Controller
         }
     }
 
-    public function destroy($id)
-    {
-        try {
-            $produto = Produto::findOrFail($id);
-
-            // Verificar se há itens de venda vinculados (comentar se não tiver model Item)
-            // $itensCount = $produto->itens()->count();
-            // 
-            // if ($itensCount > 0) {
-            //     if (request()->expectsJson()) {
-            //         return response()->json([
-            //             'success' => false,
-            //             'message' => 'Não é possível excluir este produto pois ele possui vendas vinculadas.'
-            //         ], 400);
-            //     }
-            //     
-            //     return redirect()->route('produtos.index')
-            //         ->with('error', 'Não é possível excluir este produto pois ele possui vendas vinculadas.');
-            // }
-
-            $produto->delete();
-
-            // Para requisições AJAX
-            if (request()->expectsJson()) {
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Produto excluído com sucesso!'
-                ]);
-            }
-
-            return redirect()->route('produtos.index')->with('success', 'Produto excluído com sucesso!');
-        } catch (\Exception $e) {
-            // Para requisições AJAX
+    // Simplificar o método destroy
+public function destroy($id)
+{
+    try {
+        $produto = Produto::findOrFail($id);
+        
+        // Verificar se há itens de venda vinculados
+        $itensCount = $produto->itens()->count();
+        
+        if ($itensCount > 0) {
             if (request()->expectsJson()) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Erro ao excluir produto: ' . $e->getMessage()
-                ], 500);
+                    'message' => 'Não é possível excluir este produto pois ele possui vendas vinculadas.'
+                ], 400);
             }
-
+            
             return redirect()->route('produtos.index')
-                ->with('error', 'Erro ao excluir produto: ' . $e->getMessage());
+                ->with('error', 'Não é possível excluir este produto pois ele possui vendas vinculadas.');
         }
+
+        $produto->delete();
+        
+        // Para requisições AJAX
+        if (request()->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Produto excluído com sucesso!'
+            ]);
+        }
+
+        return redirect()->route('produtos.index')->with('success', 'Produto excluído com sucesso!');
+    } catch (\Exception $e) {
+        // Para requisições AJAX
+        if (request()->expectsJson()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Erro ao excluir produto: ' . $e->getMessage()
+            ], 500);
+        }
+
+        return redirect()->route('produtos.index')
+            ->with('error', 'Erro ao excluir produto: ' . $e->getMessage());
     }
+}
 }

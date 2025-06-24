@@ -42,7 +42,6 @@ class Produto extends Model
         'preco_sugerido',
         'unidades',
     ];
-    
     /**
      * Os atributos que devem ser convertidos.
      *
@@ -50,6 +49,7 @@ class Produto extends Model
      */
     protected $casts = [
         'preco_sugerido' => 'decimal:2',
+        'unidades' => 'string', // Alterado de integer para string
     ];
     
     /**
